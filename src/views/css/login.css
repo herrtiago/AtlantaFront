@@ -1,0 +1,16 @@
+.login-input {
+  width: 80%;
+  padding: 1rem 2rem;
+  margin-bottom: 1rem;
+  border-radius: 25px;
+  border: 1px solid #ddd;
+  font-size: 20%;
+  font-family: 'Just Another Hand', cursive;
+  background-color: #f43f5e;
+  color: white;
+  font-size: x-large;
+}
+
+.login-input::placeholder {
+  color: black;
+}
