@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import "../../../assets/css/home.css";
 import "../../../assets/css/login.css";
 import LogoImg from '../../../assets/images/logo.jpg';
+import { UserService } from '../../../services/UserService';
+import * as alertifyjs from "alertifyjs";
+import { Delay } from '../../../utils/delay';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -10,14 +13,19 @@ const Login = () => {
   const navigate = useNavigate();
 
   const handleLoginClick = async () => {
-    try {
-      const response = await fetch('http://localhost:5121/login/test');
-      const message = await response.text();
-      console.log(message); // Imprime la respuesta en la consola
-      navigate('/files');
-    } catch (error) {
-      console.error('Error during GET request:', error);
-    }
+    UserService.Login(email, password)
+      .then(async (res) => {
+        if (res.success && res.data) {
+          alertifyjs.success("Inicio de sesion exitoso");
+
+          await Delay(500);
+
+          localStorage.setItem("token", res.data);
+          navigate("/files")
+        } else {
+          alertifyjs.error(res.errors.join(", "));
+        }
+      });
   };
 
   return (
