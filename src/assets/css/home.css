@@ -1,0 +1,29 @@
+.button {
+  width: 100%;
+  /* Full width of the parent container */
+  padding: 1rem 2rem;
+  border-radius: 25px;
+  border: none;
+  color: white;
+  font-family: 'Just Another Hand', cursive;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.button:hover {
+  border: 2px solid black;
+}
+
+.font-hand {
+  font-family: 'Just Another Hand', cursive;
+}
+
+img {
+  border-radius: 25px;
+
+}
+
+.gris {
+  background-color: #d4d4d8;
+}

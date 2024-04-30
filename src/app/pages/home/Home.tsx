@@ -1,7 +1,8 @@
-import React from 'react';
-import './css/home.css';
-import LogoImg from '../images/logo.jpg';
+import "../../../assets/css/home.css"
+
+import LogoImg from '../../../assets/images/logo.jpg';
 import { Link } from 'react-router-dom';
+
 const Home = () => {
     return (
         <div className="flex min-h-screen text-center">

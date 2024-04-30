@@ -1,6 +1,5 @@
-import React from 'react';
-import './css/home.css';
-import LogoImg from '../images/logo.jpg';
+import "../../../assets/css/home.css";
+import LogoImg from '../../../assets/images/logo.jpg';
 const Register = () => {
   return (
     <div className="flex min-h-screen text-center">

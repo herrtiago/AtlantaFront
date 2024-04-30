@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './css/home.css';
-import './css/login.css';
-import LogoImg from '../images/logo.jpg';
+import "../../../assets/css/home.css";
+import "../../../assets/css/login.css";
+import LogoImg from '../../../assets/images/logo.jpg';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
-  
+
   const handleLoginClick = async () => {
     try {
       const response = await fetch('http://localhost:5121/login/test');
@@ -26,14 +26,14 @@ const Login = () => {
       <div className="w-1/2 gris flex justify-center items-center">
         <img src={LogoImg} alt="Logo App" className="max-w-xs" />
       </div>
-       {/* Contenedor principal*/}
+      {/* Contenedor principal*/}
       <div className="w-1/2 bg-[#60a5fa] flex flex-col justify-center items-center p-12">
-           {/* Titulos*/}
+        {/* Titulos*/}
         <div className="mb-16">
           <h1 className="text-9xl font-hand">Atlanta</h1>
           <p className="text-3xl font-hand">GESTIONA TUS ARCHIVOS</p>
         </div>
-           {/* Inputs Login*/}
+        {/* Inputs Login*/}
         <input
           type="text"
           placeholder="Correo electrónico"
