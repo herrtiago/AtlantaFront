@@ -4,8 +4,17 @@ import FilesView from './files/Files';
 import Home from './home/Home';
 import Login from './login/Login';
 import Register from './register/Register';
+import { useAuth } from '../../store/authStore';
+import { useEffect } from 'react';
 
 function App() {
+
+  const auth = useAuth(s => s.auth);
+
+  useEffect(() => {
+    auth();
+  },[auth]);
+
   return (
     <Router>
       <Routes>
