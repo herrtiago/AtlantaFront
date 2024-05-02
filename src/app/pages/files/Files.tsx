@@ -12,12 +12,14 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import IconButton from "../../../components/IconButton";
 import { FolderPath } from "./components/FolderPath";
+import { CreateFolderModal } from "./components/modals/CreateFolderModal";
 
 type fileExplorerData = TreeViewBaseItem<ExtendedTreeItemProps>;
 
 export const FilesView = () => {
 
   const [upModal, setUpModal] = useState(false);
+  const [fModal, setFModal] = useState(false);
 
   const user = useAuth(s => s.user);
   const [files, fetchAll] = useFileExplorer(s => [s.files, s.fetchAll]);
@@ -56,6 +58,7 @@ export const FilesView = () => {
             <IconButton
               className="flex-1 !rounded-none !bg-gray-500 hover:!bg-gray-400"
               icon={<CreateNewFolderIcon />}
+              onClick={() => setFModal(true)} 
             >
               Crear carpeta
             </IconButton>
@@ -80,6 +83,10 @@ export const FilesView = () => {
         <UploadFileModal
           open={upModal}
           setOpen={setUpModal}
+        />
+        <CreateFolderModal
+          open={fModal}
+          setOpen={setFModal}
         />
       </div>
     </div>

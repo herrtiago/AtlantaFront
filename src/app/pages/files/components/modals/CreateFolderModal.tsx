@@ -13,6 +13,7 @@ import { useAuth } from '../../../../../store/authStore';
 import { getBase64 } from '../../../../../utils/getBase64';
 import * as alertifyjs from "alertifyjs";
 import { ICreateFile } from '../../../../../interfaces/ICreateFile';
+import { FolderService } from '../../../../../services/FolderService';
 
 const style = {
     position: 'absolute' as 'absolute',
@@ -31,37 +32,21 @@ interface UploadFileProps {
     setOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-export const UploadFileModal = ({
+export const CreateFolderModal = ({
     open, setOpen
 }: UploadFileProps) => {
 
     const user = useAuth(s => s.user);
     const [currentFolder, actualizarArchivos] = useFileExplorer(s => [s.currentFolder, s.actualizarArchivos]);
 
-    const [archivo, setArchivo] = useState<File | null>(null);
-
     const [nombre, setNombre] = useState("");
-    const [extension, setExtension] = useState("");
-
-    useEffect(() => {
-        if (archivo) {
-            const fileName = archivo.name.split(".");
-            setNombre(fileName.slice(0, fileName.length - 1).join("."));
-            setExtension(fileName[fileName.length - 1]);
-        }
-    }, [archivo]);
 
     const guardar = async () => {
-        if(!user || !archivo){
+        console.log(user)
+        if(!user){
             return;
         }
-        const file: ICreateFile = {
-            folderId: currentFolder,
-            name: nombre,
-            extension,
-            content: await getBase64(archivo)
-        }
-        const res = await FileService.Create(user.id, file);
+        const res = await FolderService.Create(user.id, currentFolder ?? "root", nombre);
         if(!res.success) {
             alertifyjs.error(res.errors.join(", "));
         } else {
@@ -87,24 +72,7 @@ export const UploadFileModal = ({
                         value={nombre}
                         onChange={(e) => setNombre(e.target.value)}
                     />
-                    <Input
-                        className='w-1/4'
-                        value={extension}
-                        onChange={(e) => setExtension(e.target.value)}
-                    />
                 </div>
-                <IconButton
-                    className="!mt-5 !rounded-none !bg-gray-500 hover:!bg-gray-400"
-                    icon={<CloudUploadIcon />}
-                    type='file'
-                    onChange={(e) => {
-                        if (e.target.files) {
-                            setArchivo(e.target.files[0])
-                        }
-                    }}
-                >
-                    Subir archivo
-                </IconButton>
                 <div className='mt-5 flex'>
 
                 </div>
