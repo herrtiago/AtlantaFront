@@ -1,3 +1,5 @@
+import { useFileExplorer } from "../../../../store/fileExplorerStore";
+
 export const FilesMap = () => {
 
     const [files, currentFiles, fetchAll] = useFileExplorer(s => [s.files, s.currentFiles, s.fetchAll]);
