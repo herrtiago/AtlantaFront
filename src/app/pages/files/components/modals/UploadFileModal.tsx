@@ -62,7 +62,7 @@ export const UploadFileModal = ({
             content: await getBase64(archivo)
         }
         const res = await FileService.Create(user.id, file);
-        if(!res.success) {
+        if(!res.success && res.errors.length > 0) {
             alertifyjs.error(res.errors.join(", "));
         } else {
             alertifyjs.success("Archivo subido correctamente");

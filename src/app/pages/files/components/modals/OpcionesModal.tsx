@@ -32,7 +32,7 @@ interface UploadFileProps {
     setOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-export const CreateFolderModal = ({
+export const OpcionesModal = ({
     open, setOpen
 }: UploadFileProps) => {
 
@@ -63,19 +63,13 @@ export const CreateFolderModal = ({
             aria-describedby="modal-modal-description"
         >
             <Box sx={style}>
-                <Typography id="modal-modal-title">
-                    Nombre
-                </Typography>
-                <div className='flex'>
-                    <Input
-                        className='w-3/4 mr-2'
-                        value={nombre}
-                        onChange={(e) => setNombre(e.target.value)}
-                    />
-                </div>
-                <div className='mt-5 flex'>
-
-                </div>
+                <IconButton
+                    className="!mt-5 !rounded-none !bg-gray-500 hover:!bg-gray-400"
+                    icon={<SaveIcon/>}
+                    onClick={guardar}
+                >
+                    Guardar
+                </IconButton>
                 <IconButton
                     className="!mt-5 !rounded-none !bg-gray-500 hover:!bg-gray-400"
                     icon={<SaveIcon/>}

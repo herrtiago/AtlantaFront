@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import "../../assets/css/home.css";
 import Home from './home/Home';
 import Login from './login/Login';
@@ -16,14 +16,14 @@ function App() {
   },[auth]);
 
   return (
-    <Router>
+    <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/files" element={<FilesView/>} />
       </Routes>
-    </Router>
+    </BrowserRouter>
   );
 }
 
