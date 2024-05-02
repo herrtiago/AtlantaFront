@@ -1,11 +1,11 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import "../../assets/css/home.css";
-import FilesView from './files/Files';
 import Home from './home/Home';
 import Login from './login/Login';
 import Register from './register/Register';
 import { useAuth } from '../../store/authStore';
 import { useEffect } from 'react';
+import { FilesView } from './files/Files';
 
 function App() {
 

@@ -36,7 +36,7 @@ export const useFileExplorer = create<IFileExplorer>((set) => ({
         await fetchFolder("root");
 
         set({
-            files: {...files}
+            files: { ...files }
         });
     },
     setCurrentFolder: (folderId: string) => {

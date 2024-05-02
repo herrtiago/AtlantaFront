@@ -6,7 +6,6 @@ import { TransitionProps } from '@mui/material/transitions';
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
 import Typography from '@mui/material/Typography';
-import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import FolderRounded from '@mui/icons-material/FolderRounded';
 import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
 import { treeItemClasses } from '@mui/x-tree-view/TreeItem';
@@ -24,36 +23,12 @@ import { TreeItem2Icon } from '@mui/x-tree-view/TreeItem2Icon';
 import { TreeItem2Provider } from '@mui/x-tree-view/TreeItem2Provider';
 import { TreeViewBaseItem } from '@mui/x-tree-view/models';
 import { useFileExplorer } from '../../../../store/fileExplorerStore';
+import { Padding } from '@mui/icons-material';
 
 export type ExtendedTreeItemProps = {
   id: string;
   label: string;
 };
-
-const ITEMS: TreeViewBaseItem<ExtendedTreeItemProps>[] = [
-  {
-    id: '1',
-    label: 'Documents',
-    children: [
-      {
-        id: '1.1',
-        label: 'Company',
-        children: [],
-      },
-      { id: '1.2', label: 'Personal' }
-    ],
-  },
-  {
-    id: '2',
-    label: 'Bookmarked',
-    children: [
-      { id: '2.1', label: 'Learning materials' },
-      { id: '2.2', label: 'News' },
-      { id: '2.3', label: 'Forums' }
-    ],
-  },
-  { id: '3', label: 'History' }
-];
 
 function DotIcon() {
   return (
@@ -101,35 +76,27 @@ const CustomTreeItemContent = styled(TreeItem2Content)(({ theme }) => ({
     marginRight: theme.spacing(2),
   },
   [`&.Mui-expanded `]: {
+    
     '&:not(.Mui-focused, .Mui-selected, .Mui-selected.Mui-focused) .labelIcon': {
-      color:
-        theme.palette.mode === 'light'
-          ? theme.palette.primary.main
-          : theme.palette.primary.dark,
+      color: theme.palette.primary.dark,
     },
     '&::before': {
       content: '""',
       display: 'block',
       position: 'absolute',
       left: '16px',
-      top: '44px',
+      top: '40px',
       height: 'calc(100% - 48px)',
-      width: '1.5px',
-      backgroundColor:
-        theme.palette.mode === 'light'
-          ? theme.palette.grey[300]
-          : theme.palette.grey[700],
+      width: '2px',
+      backgroundColor: theme.palette.primary.main
     },
   },
   '&:hover': {
     backgroundColor: alpha(theme.palette.primary.main, 0.1),
-    color: theme.palette.mode === 'light' ? theme.palette.primary.main : 'white',
+    color: theme.palette.primary.main,
   },
   [`&.Mui-focused, &.Mui-selected, &.Mui-selected.Mui-focused`]: {
-    backgroundColor:
-      theme.palette.mode === 'light'
-        ? theme.palette.primary.main
-        : theme.palette.primary.dark,
+    backgroundColor: theme.palette.primary.main,
     color: theme.palette.primary.contrastText,
   },
 }));
@@ -141,6 +108,7 @@ function TransitionComponent(props: TransitionProps) {
     to: {
       opacity: props.in ? 1 : 0,
       transform: `translate3d(0,${props.in ? 0 : 20}px,0)`,
+      paddingLeft: "40px"
     },
   });
 
@@ -148,19 +116,17 @@ function TransitionComponent(props: TransitionProps) {
 }
 
 const StyledTreeItemLabelText = styled(Typography)({
-  color: 'inherit',
+  color: 'white',
   fontFamily: 'General Sans',
   fontWeight: 500,
 }) as unknown as typeof Typography;
 
 interface CustomLabelProps {
   children: React.ReactNode;
-  icon?: React.ElementType;
   expandable?: boolean;
 }
 
 function CustomLabel({
-  icon: Icon,
   expandable,
   children,
   ...other
@@ -173,14 +139,12 @@ function CustomLabel({
         alignItems: 'center',
       }}
     >
-      {Icon && (
-        <Box
-          component={Icon}
-          className="labelIcon"
-          color="inherit"
-          sx={{ mr: 1, fontSize: '1.2rem' }}
-        />
-      )}
+      <Box
+        component={FolderRounded}
+        className="labelIcon"
+        color="gray"
+        sx={{ mr: 1, fontSize: '1.2rem' }}
+      />
 
       <StyledTreeItemLabelText variant="body2">{children}</StyledTreeItemLabelText>
       {expandable && <DotIcon />}
@@ -197,7 +161,7 @@ const isExpandable = (reactChildren: React.ReactNode) => {
 
 interface CustomTreeItemProps
   extends Omit<UseTreeItem2Parameters, 'rootRef'>,
-    Omit<React.HTMLAttributes<HTMLLIElement>, 'onFocus'> {}
+  Omit<React.HTMLAttributes<HTMLLIElement>, 'onFocus'> { }
 
 const CustomTreeItem = React.forwardRef(function CustomTreeItem(
   props: CustomTreeItemProps,

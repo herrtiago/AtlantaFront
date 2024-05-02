@@ -1,13 +1,22 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "../../../assets/css/files.css"
 import { useFileExplorer } from "../../../store/fileExplorerStore";
 import FileExplorer, { ExtendedTreeItemProps } from "./components/fileExplorer";
 import { TreeViewBaseItem } from "@mui/x-tree-view";
 import { useAuth } from "../../../store/authStore";
+import { UploadFileModal } from "./components/modals/UploadFileModal";
+import { FilesMap } from "./components/filesMap";
+import NavBar from "../Navbar";
+import { ButtonGroup, Button } from "@mui/material";
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
+import IconButton from "../../../components/IconButton";
 
 type fileExplorerData = TreeViewBaseItem<ExtendedTreeItemProps>;
 
-const FilesView = () => {
+export const FilesView = () => {
+
+  const [upModal, setUpModal] = useState(false);
 
   const user = useAuth(s => s.user);
   const [files, currentFiles, fetchAll] = useFileExplorer(s => [s.files, s.currentFiles, s.fetchAll]);
@@ -19,7 +28,40 @@ const FilesView = () => {
 
   const explorer = useMemo<fileExplorerData[]>(() => {
 
-    return [{ "id": "3adc4ef3-7313-4978-bea6-0cf86db3ac29", "label": "gatitos", "children": [] }, { "id": "4b7fcd26-3f58-49f6-ba1a-e249c4b180e1", "label": "gatitosv2", "children": [] }, { "id": "80be8b6b-3a2a-47cd-b3ec-f110c630bce9", "label": "administrador", "children": [{ "id": "f12bdfef-cefd-4ca8-afd2-894ae6829524", "label": "imagenes", "children": [] }] }, { "id": "a52ebd38-b9bd-4967-92f4-e28b4179df42", "label": "imagenes", "children": [] }]
+    return [
+      {
+        "id": "3adc4ef3-7313-4978-bea6-0cf86db3ac29",
+        "label": "gatitos",
+        "children": []
+      },
+      {
+        "id": "4b7fcd26-3f58-49f6-ba1a-e249c4b180e1",
+        "label": "gatitosv2",
+        "children": []
+      },
+      {
+        "id": "80be8b6b-3a2a-47cd-b3ec-f110c630bce9",
+        "label": "administrador",
+        "children": [
+          {
+            "id": "f12bdfef-cefd-4ca8-afd2-894ae6829524",
+            "label": "imagenes",
+            "children": [
+              {
+                "id": "3adc4ef3-7313-4978-bea6-0cf86db3ac23",
+                "label": "gatitos",
+                "children": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "a52ebd38-b9bd-4967-92f4-e28b4179df42",
+        "label": "imagenes",
+        "children": []
+      }
+    ]
 
     const obtenerFolders = (folderId: string) => {
       if (!files[folderId]) return [];
@@ -46,27 +88,41 @@ const FilesView = () => {
   );
 
   return (
-    <div className="flex min-h-screen text-center">
-      {/* Contenedor izquierda opciones */}
-      <div className="w-96 bg-[#333] p-4 text-white">
-        <FileExplorer items={explorer} />
-      </div>
-      {/* Contenedor principal*/}
-      <div className="flex-1 bg-[#60a5fa] p-12">
-        <h2 className="text-6xl font-hand mb-5">Tus archivos</h2>
-        <div className="grid grid-cols-5 gap-4">
-          {
-            currentFiles.map((file, i) => (
-              <div key={i} className="file-item">
-                <FolderIcon />
-                <p>{file.name}</p>
-              </div>
-            ))
-          }
+    <div className="w-screen h-screen">
+      <NavBar />
+      <div className="flex text-center">
+        {/* Contenedor izquierda opciones */}
+        <div className="w-96 bg-[#333] text-white">
+          <ButtonGroup className="!flex" variant="outlined" aria-label="Basic button group">
+            <IconButton
+              className="flex-1 !rounded-none !bg-gray-500 hover:!bg-gray-400"
+              icon={<CreateNewFolderIcon />}
+            >
+              Crear carpeta
+            </IconButton>
+            <IconButton
+              className="flex-1 !rounded-none !bg-gray-500 hover:!bg-gray-400"
+              icon={<CloudUploadIcon />}
+            >
+              Subir archivo
+            </IconButton>
+          </ButtonGroup>
+          <div className="px-4">
+            <FileExplorer items={explorer} />
+          </div>
         </div>
+
+
+        {/* Contenedor principal*/}
+        <div className="flex flex-col flex-1 bg-[#60a5fa] p-12">
+          <h2 className="text-6xl font-hand mb-5 flex justify-center items-center">Tus archivos</h2>
+          <FilesMap />
+        </div>
+        <UploadFileModal
+          open={upModal}
+          setOpen={setUpModal}
+        />
       </div>
     </div>
   );
 };
-
-export default FilesView;
