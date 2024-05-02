@@ -1,8 +1,18 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
+import { Icon, Input } from '@mui/material';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import IconButton from '../../../../../components/IconButton';
+import { useEffect, useState } from 'react';
+import { useFileExplorer } from '../../../../../store/fileExplorerStore';
+import SaveIcon from '@mui/icons-material/Save';
+import { FileService } from '../../../../../services/FileService';
+import { useAuth } from '../../../../../store/authStore';
+import { getBase64 } from '../../../../../utils/getBase64';
+import * as alertifyjs from "alertifyjs";
+import { ICreateFile } from '../../../../../interfaces/ICreateFile';
 
 const style = {
     position: 'absolute' as 'absolute',
@@ -25,6 +35,43 @@ export const UploadFileModal = ({
     open, setOpen
 }: UploadFileProps) => {
 
+    const user = useAuth(s => s.user);
+    const [currentFolder, actualizarArchivos] = useFileExplorer(s => [s.currentFolder, s.actualizarArchivos]);
+
+    const [archivo, setArchivo] = useState<File | null>(null);
+
+    const [nombre, setNombre] = useState("");
+    const [extension, setExtension] = useState("");
+
+    useEffect(() => {
+        if (archivo) {
+            const fileName = archivo.name.split(".");
+            setNombre(fileName.slice(0, fileName.length - 1).join("."));
+            setExtension(fileName[fileName.length - 1]);
+        }
+    }, [archivo]);
+
+    const guardar = async () => {
+        console.log(user)
+        console.log(archivo)
+        if(!user || !archivo){
+            return;
+        }
+        const file: ICreateFile = {
+            folderId: currentFolder,
+            name: nombre,
+            extension,
+            content: await getBase64(archivo)
+        }
+        const res = await FileService.Create(user.id, file);
+        if(!res.success) {
+            alertifyjs.error(res.errors.join(", "));
+        } else {
+            alertifyjs.success("Archivo subido correctamente");
+            actualizarArchivos(user.id, currentFolder ?? "root");
+        }
+    }
+
     return (
         <Modal
             open={open}
@@ -33,12 +80,43 @@ export const UploadFileModal = ({
             aria-describedby="modal-modal-description"
         >
             <Box sx={style}>
-                <Typography id="modal-modal-title" variant="h6" component="h2">
-                    Text in a modal
+                <Typography id="modal-modal-title">
+                    Nombre
                 </Typography>
-                <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                    Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-                </Typography>
+                <div className='flex'>
+                    <Input
+                        className='w-3/4 mr-2'
+                        value={nombre}
+                        onChange={(e) => setNombre(e.target.value)}
+                    />
+                    <Input
+                        className='w-1/4'
+                        value={extension}
+                        onChange={(e) => setExtension(e.target.value)}
+                    />
+                </div>
+                <IconButton
+                    className="!mt-5 !rounded-none !bg-gray-500 hover:!bg-gray-400"
+                    icon={<CloudUploadIcon />}
+                    type='file'
+                    onChange={(e) => {
+                        if (e.target.files) {
+                            setArchivo(e.target.files[0])
+                        }
+                    }}
+                >
+                    Subir archivo
+                </IconButton>
+                <div className='mt-5 flex'>
+
+                </div>
+                <IconButton
+                    className="!mt-5 !rounded-none !bg-gray-500 hover:!bg-gray-400"
+                    icon={<SaveIcon/>}
+                    onClick={guardar}
+                >
+                    Guardar
+                </IconButton>
             </Box>
         </Modal>
     );

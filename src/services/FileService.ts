@@ -8,12 +8,12 @@ const API_BASE_URL = "https://localhost:7103/File/";
 
 export class FileService {
 
-    public static Create = (userId: string, fileId: string, file: ICreateFile): Promise<IResponse<string>> => {
+    public static Create = (userId: string, file: ICreateFile): Promise<IResponse<string>> => {
         return new Promise((res) => {
 
             const token = localStorage.getItem("token");
 
-            axios.post<IResponse<string>>(API_BASE_URL + fileId + "/upload", file, { params: { userId }, headers: { Authorization: `Bearer ${token}` } })
+            axios.post<IResponse<string>>(API_BASE_URL + "upload", file, { params: { userId }, headers: { Authorization: `Bearer ${token}` } })
                 .then(r => res(r.data))
                 .catch(r => {
                     res({

@@ -1,6 +1,6 @@
 import { styled } from '@mui/material/styles';
 import Button from '@mui/material/Button';
-import { ReactNode } from 'react';
+import { ChangeEventHandler, HTMLInputTypeAttribute, ReactNode } from 'react';
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
@@ -18,12 +18,18 @@ interface IconButtonProps {
     children: ReactNode
     icon: ReactNode
     className?: string
+    onClick?: () => void
+    type?: HTMLInputTypeAttribute
+    onChange?: ChangeEventHandler<HTMLInputElement>
 }
 
 export default function IconButton({
     children,
     icon,
-    className
+    className,
+    onClick,
+    type,
+    onChange
 }: IconButtonProps) {
   return (
     <Button
@@ -33,9 +39,13 @@ export default function IconButton({
       variant="contained"
       tabIndex={-1}
       startIcon={icon}
+      onClick={onClick}
     >
       {children}
-      <VisuallyHiddenInput type="file" />
+      <VisuallyHiddenInput
+        type={type ?? "button"}
+        onChange={onChange}
+      />
     </Button>
   );
 }
