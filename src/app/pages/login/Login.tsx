@@ -25,6 +25,7 @@ const Login = () => {
         } else {
           alertifyjs.error(res.errors.join(", "));
         }
+        window.location.reload();
       });
   };
 
