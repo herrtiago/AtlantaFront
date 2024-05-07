@@ -1,4 +1,3 @@
-// FileExplorer.tsx
 import * as React from "react";
 import clsx from "clsx";
 import { animated, useSpring } from "@react-spring/web";
@@ -26,8 +25,12 @@ import { TreeViewBaseItem } from "@mui/x-tree-view/models";
 import { useFileExplorer } from "../../../../store/fileExplorerStore";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import MoveIcon from "@mui/icons-material/DriveFileMove";
+import ShareIcon from "@mui/icons-material/Share";
 import { RenameFileModal } from "./modals/RenameFileModal";
 import { DeleteConfirmationModal } from "./modals/DeleteConfirmationModal";
+import { MoveFileModal } from "./modals/MoveFileModal";
+import { ShareModal } from "./modals/ShareModal";
 
 export type ExtendedTreeItemProps = {
   id: string;
@@ -173,6 +176,8 @@ const CustomTreeItem = React.forwardRef(function CustomTreeItem(
   const setCurrentFolder = useFileExplorer((s) => s.setCurrentFolder);
   const [isRenameModalOpen, setRenameModalOpen] = React.useState(false);
   const [isDeleteModalOpen, setDeleteModalOpen] = React.useState(false);
+  const [isMoveModalOpen, setMoveModalOpen] = React.useState(false);
+  const [isShareModalOpen, setShareModalOpen] = React.useState(false);
 
   const {
     getRootProps,
@@ -189,6 +194,8 @@ const CustomTreeItem = React.forwardRef(function CustomTreeItem(
 
   const openRenameModal = () => setRenameModalOpen(true);
   const openDeleteModal = () => setDeleteModalOpen(true);
+  const openMoveModal = () => setMoveModalOpen(true);
+  const openShareModal = () => setShareModalOpen(true);
 
   return (
     <TreeItem2Provider itemId={itemId}>
@@ -222,6 +229,20 @@ const CustomTreeItem = React.forwardRef(function CustomTreeItem(
               openRenameModal();
             }}
           />
+          <MoveIcon
+            className="cursor-pointer text-green-500 ml-2"
+            onClick={(e) => {
+              e.stopPropagation();
+              openMoveModal();
+            }}
+          />
+          <ShareIcon
+            className="cursor-pointer text-yellow-500 ml-2"
+            onClick={(e) => {
+              e.stopPropagation();
+              openShareModal();
+            }}
+          />
           <DeleteIcon
             className="cursor-pointer text-red-500 ml-2"
             onClick={(e) => {
@@ -237,6 +258,18 @@ const CustomTreeItem = React.forwardRef(function CustomTreeItem(
         setOpen={setRenameModalOpen}
         fileId={item.id}
         fileType="folder"
+      />
+      <MoveFileModal
+        open={isMoveModalOpen}
+        setOpen={setMoveModalOpen}
+        fileId={item.id}
+        fileType="folder"
+      />
+      <ShareModal
+        open={isShareModalOpen}
+        setOpen={setShareModalOpen}
+        itemId={item.id}
+        itemType="folder"
       />
       <DeleteConfirmationModal
         open={isDeleteModalOpen}

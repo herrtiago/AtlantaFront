@@ -1,4 +1,3 @@
-// FilesMap.tsx
 import { Typography } from "@mui/material";
 import { useFileExplorer } from "../../../../store/fileExplorerStore";
 import { FileIcon } from "react-file-icon";
@@ -9,9 +8,11 @@ import { downloadFile } from "../../../../utils/downloadFile";
 import { RenameFileModal } from "./modals/RenameFileModal";
 import { DeleteConfirmationModal } from "./modals/DeleteConfirmationModal";
 import { MoveFileModal } from "./modals/MoveFileModal";
+import { ShareModal } from "./modals/ShareModal";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import MoveIcon from "@mui/icons-material/DriveFileMove";
+import ShareIcon from "@mui/icons-material/Share";
 
 export const FilesMap = () => {
   const user = useAuth((s) => s.user);
@@ -27,6 +28,9 @@ export const FilesMap = () => {
 
   const [moveFileId, setMoveFileId] = useState<string | null>(null);
   const [isMoveModalOpen, setMoveModalOpen] = useState(false);
+
+  const [shareFileId, setShareFileId] = useState<string | null>(null);
+  const [isShareModalOpen, setShareModalOpen] = useState(false);
 
   const HandleClick = async (fileId: string) => {
     if (!user) return;
@@ -51,6 +55,11 @@ export const FilesMap = () => {
     setMoveModalOpen(true);
   };
 
+  const openShareModal = (fileId: string) => {
+    setShareFileId(fileId);
+    setShareModalOpen(true);
+  };
+
   useEffect(() => {
     if (user) {
       actualizarArchivos(user.id, currentFolder ?? "root");
@@ -60,36 +69,43 @@ export const FilesMap = () => {
   return (
     <div className="flex-1 p-2 bg-orange-50 border border-gray-100 rounded-md shadow-xl">
       {currentFiles.length > 0 ? (
-        <div className="grid grid-cols-8 gap-4">
+        <div className="grid grid-cols-10 gap-2">
           {currentFiles.map((file, i) => (
             <div
               key={i}
-              className="relative flex flex-col items-center p-2 border border-gray-300 rounded-lg bg-white shadow-md w-28"
+              className="relative flex flex-col items-center p-1 border border-gray-300 rounded-lg bg-white shadow-md w-24"
               onClick={() => HandleClick(file.id)}
             >
               <div className="max-w-16">
                 <FileIcon color="#d1d5db" extension={file.extension} />
               </div>
-              <p className="truncate w-24 text-center text-sm">
+              <p className="truncate w-20 text-center text-sm">
                 {file.name}
                 {file.extension ? `.${file.extension}` : ""}
               </p>
               <EditIcon
-                className="absolute top-1 right-10 m-1 cursor-pointer text-blue-400"
+                className="absolute top-0 right-16 m-1 cursor-pointer text-blue-400"
                 onClick={(e) => {
                   e.stopPropagation();
                   openRenameModal(file.id);
                 }}
               />
               <MoveIcon
-                className="absolute top-1 right-6 m-1 cursor-pointer text-green-500"
+                className="absolute top-0 right-12 m-1 cursor-pointer text-green-500"
                 onClick={(e) => {
                   e.stopPropagation();
                   openMoveModal(file.id);
                 }}
               />
+              <ShareIcon
+                className="absolute top-0 right-8 m-1 cursor-pointer text-yellow-500"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  openShareModal(file.id);
+                }}
+              />
               <DeleteIcon
-                className="absolute top-1 right-1 m-1 cursor-pointer text-red-500"
+                className="absolute top-0 right-0 m-1 cursor-pointer text-red-500"
                 onClick={(e) => {
                   e.stopPropagation();
                   openDeleteModal(file.id);
@@ -125,6 +141,14 @@ export const FilesMap = () => {
           setOpen={setMoveModalOpen}
           fileId={moveFileId}
           fileType="file"
+        />
+      )}
+      {shareFileId && (
+        <ShareModal
+          open={isShareModalOpen}
+          setOpen={setShareModalOpen}
+          itemId={shareFileId}
+          itemType="file"
         />
       )}
     </div>
