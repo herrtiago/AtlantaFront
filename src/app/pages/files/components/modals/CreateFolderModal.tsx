@@ -50,8 +50,10 @@ export const CreateFolderModal = ({
         if(!res.success && res.errors.length > 0) {
             alertifyjs.error(res.errors.join(", "));
         } else {
-            alertifyjs.success("Archivo subido correctamente");
+            alertifyjs.success("Carpeta creada correctamente");
             actualizarArchivos(user.id, currentFolder ?? "root");
+            setNombre(""); // Reiniciar el nombre después de crear la carpeta
+            setOpen(false); // Cerrar el modal después de guardar
         }
     }
 
