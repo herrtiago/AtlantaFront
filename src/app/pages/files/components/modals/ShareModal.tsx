@@ -11,58 +11,50 @@ import * as alertifyjs from "alertifyjs";
 import { FolderService } from "../../../../../services/FolderService";
 import { FileService } from "../../../../../services/FileService";
 
+
 const style = {
-  position: "absolute" as "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
-  p: 4,
-};
-
-interface ShareModalProps {
-  open: boolean;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  itemId: string;
-  itemType: "folder" | "file";
-}
-
-export const ShareModal = ({ open, setOpen, itemId, itemType }: ShareModalProps) => {
-  const user = useAuth((s) => s.user);
-  const [currentFolder, actualizarArchivos] = useFileExplorer((s) => [
-    s.currentFolder,
-    s.actualizarArchivos,
-  ]);
-  const [emails, setEmails] = React.useState<string>("");
-  const [sharing, setSharing] = React.useState(false);
-
-  const shareItem = async () => {
-    if (!user || sharing) return;
-
-    const emailList = emails.split(",").map((email) => email.trim());
-    setSharing(true);
-
-    let res;
-    if (itemType === "folder") {
-      res = await FolderService.Share(user.id, itemId, emailList);
-    } else {
-      res = await FileService.Share(user.id, itemId, emailList);
-    }
-
-    setSharing(false);
-
-    if (!res.success && res.errors.length > 0) {
-      alertifyjs.error(res.errors.join(", "));
-    } else {
-      alertifyjs.success(`${itemType === "folder" ? "Carpeta" : "Archivo"} compartido correctamente`);
-      actualizarArchivos(user.id, currentFolder ?? "root");
-      setEmails(""); // Reiniciar los correos electrónicos
-      setOpen(false); // Cerrar el modal
-    }
+    position: "absolute" as "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: 400,
+    bgcolor: "background.paper",
+    border: "2px solid #000",
+    boxShadow: 24,
+    p: 4,
   };
+  
+interface ShareModalProps {
+    open: boolean;
+    setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    itemId: string;
+    itemType: "folder" | "file";
+  }
+  
+  export const ShareModal = ({ open, setOpen, itemId, itemType }: ShareModalProps) => {
+    const user = useAuth((s) => s.user);
+    const [emails, setEmails] = React.useState<string>("");
+  
+    const shareItem = async () => {
+      if (!user || !emails) return;
+  
+      const emailList = emails.split(",").map((email) => email.trim());
+  
+      let res;
+      if (itemType === "folder") {
+        res = await FolderService.Share(user.id, itemId, emailList);
+      } else {
+        res = await FileService.Share(user.id, itemId, emailList);
+      }
+  
+      if (!res.success && res.errors.length > 0) {
+        alertifyjs.error(res.errors.join(", "));
+      } else {
+        alertifyjs.success(`${itemType === "folder" ? "Carpeta" : "Archivo"} compartido correctamente`);
+        setOpen(false);
+        setEmails(""); // Reiniciar los correos electrónicos
+      }
+    };
 
   return (
     <Modal
