@@ -7,7 +7,9 @@ import { FileService } from "../../../../services/FileService";
 import { useAuth } from "../../../../store/authStore";
 import { downloadFile } from "../../../../utils/downloadFile";
 import { RenameFileModal } from "./modals/RenameFileModal";
+import { DeleteConfirmationModal } from "./modals/DeleteConfirmationModal";
 import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 export const FilesMap = () => {
   const user = useAuth((s) => s.user);
@@ -17,6 +19,9 @@ export const FilesMap = () => {
 
   const [selectedFileId, setSelectedFileId] = useState<string | null>(null);
   const [isRenameModalOpen, setRenameModalOpen] = useState(false);
+
+  const [deleteFileId, setDeleteFileId] = useState<string | null>(null);
+  const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
 
   const HandleClick = async (fileId: string) => {
     if (!user) return;
@@ -29,6 +34,11 @@ export const FilesMap = () => {
   const openRenameModal = (fileId: string) => {
     setSelectedFileId(fileId);
     setRenameModalOpen(true);
+  };
+
+  const openDeleteModal = (fileId: string) => {
+    setDeleteFileId(fileId);
+    setDeleteModalOpen(true);
   };
 
   useEffect(() => {
@@ -55,10 +65,17 @@ export const FilesMap = () => {
                 {file.extension ? `.${file.extension}` : ""}
               </p>
               <EditIcon
-                className="absolute top-0 right-0 m-1 cursor-pointer text-blue-400"
+                className="absolute top-0 right-6 m-1 cursor-pointer text-blue-400"
                 onClick={(e) => {
                   e.stopPropagation();
                   openRenameModal(file.id);
+                }}
+              />
+              <DeleteIcon
+                className="absolute top-0 right-0 m-1 cursor-pointer text-red-500"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  openDeleteModal(file.id);
                 }}
               />
             </div>
@@ -75,6 +92,14 @@ export const FilesMap = () => {
           setOpen={setRenameModalOpen}
           fileId={selectedFileId}
           fileType="file"
+        />
+      )}
+      {deleteFileId && (
+        <DeleteConfirmationModal
+          open={isDeleteModalOpen}
+          setOpen={setDeleteModalOpen}
+          itemId={deleteFileId}
+          itemType="file"
         />
       )}
     </div>

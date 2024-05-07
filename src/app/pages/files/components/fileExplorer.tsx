@@ -25,7 +25,9 @@ import { TreeItem2Provider } from "@mui/x-tree-view/TreeItem2Provider";
 import { TreeViewBaseItem } from "@mui/x-tree-view/models";
 import { useFileExplorer } from "../../../../store/fileExplorerStore";
 import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { RenameFileModal } from "./modals/RenameFileModal";
+import { DeleteConfirmationModal } from "./modals/DeleteConfirmationModal";
 
 export type ExtendedTreeItemProps = {
   id: string;
@@ -170,6 +172,7 @@ const CustomTreeItem = React.forwardRef(function CustomTreeItem(
 
   const setCurrentFolder = useFileExplorer((s) => s.setCurrentFolder);
   const [isRenameModalOpen, setRenameModalOpen] = React.useState(false);
+  const [isDeleteModalOpen, setDeleteModalOpen] = React.useState(false);
 
   const {
     getRootProps,
@@ -185,6 +188,7 @@ const CustomTreeItem = React.forwardRef(function CustomTreeItem(
   const expandable = isExpandable(children);
 
   const openRenameModal = () => setRenameModalOpen(true);
+  const openDeleteModal = () => setDeleteModalOpen(true);
 
   return (
     <TreeItem2Provider itemId={itemId}>
@@ -218,6 +222,13 @@ const CustomTreeItem = React.forwardRef(function CustomTreeItem(
               openRenameModal();
             }}
           />
+          <DeleteIcon
+            className="cursor-pointer text-red-500 ml-2"
+            onClick={(e) => {
+              e.stopPropagation();
+              openDeleteModal();
+            }}
+          />
         </CustomTreeItemContent>
         {children && <TransitionComponent {...getGroupTransitionProps()} />}
       </StyledTreeItemRoot>
@@ -226,6 +237,12 @@ const CustomTreeItem = React.forwardRef(function CustomTreeItem(
         setOpen={setRenameModalOpen}
         fileId={item.id}
         fileType="folder"
+      />
+      <DeleteConfirmationModal
+        open={isDeleteModalOpen}
+        setOpen={setDeleteModalOpen}
+        itemId={item.id}
+        itemType="folder"
       />
     </TreeItem2Provider>
   );
