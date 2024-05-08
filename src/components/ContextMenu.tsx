@@ -4,6 +4,7 @@ type ContextMenuProps = {
     x: number,
     y: number,
     setClicked: React.Dispatch<React.SetStateAction<boolean>>,
+    className?: string,
     options: {
         icon?: ReactNode
         text: string,
@@ -14,6 +15,7 @@ type ContextMenuProps = {
 export const ContextMenu = ({
     x,
     y,
+    className,
     setClicked,
     options
 }: ContextMenuProps) => {
@@ -27,7 +29,7 @@ export const ContextMenu = ({
     }, []);
 
     return (
-        <div className="absolute rounded-sm bg-gray-500 box-border shadow-xl" style={{
+        <div className={`absolute rounded-sm bg-gray-500 box-border shadow-xl ${className}`} style={{
             top: `${y}px`,
             left: `${x}px`
         }}>

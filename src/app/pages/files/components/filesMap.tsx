@@ -9,10 +9,13 @@ import { RenameFileModal } from "./modals/RenameFileModal";
 import { DeleteConfirmationModal } from "./modals/DeleteConfirmationModal";
 import { MoveFileModal } from "./modals/MoveFileModal";
 import { ShareModal } from "./modals/ShareModal";
+import { ContextMenu } from "../../../../components/ContextMenu";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import MoveIcon from "@mui/icons-material/DriveFileMove";
 import ShareIcon from "@mui/icons-material/Share";
+import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
+import * as alertitify from "alertifyjs";
 
 export const FilesMap = () => {
   const user = useAuth((s) => s.user);
@@ -20,43 +23,50 @@ export const FilesMap = () => {
   const actualizarArchivos = useFileExplorer((s) => s.actualizarArchivos);
   const currentFolder = useFileExplorer((s) => s.currentFolder);
 
-  const [selectedFileId, setSelectedFileId] = useState<string | null>(null);
   const [isRenameModalOpen, setRenameModalOpen] = useState(false);
 
-  const [deleteFileId, setDeleteFileId] = useState<string | null>(null);
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
 
-  const [moveFileId, setMoveFileId] = useState<string | null>(null);
   const [isMoveModalOpen, setMoveModalOpen] = useState(false);
 
-  const [shareFileId, setShareFileId] = useState<string | null>(null);
   const [isShareModalOpen, setShareModalOpen] = useState(false);
 
-  const HandleClick = async (fileId: string) => {
-    if (!user) return;
-    const res = await FileService.Fetch(user.id, fileId);
+
+  const [itemId, setItemId] = useState<string | null>(null);
+
+  const [clicked, setClicked] = useState(false);
+  const [contextMenuPos, setContextMenuPos] = useState({
+    x: 0,
+    y: 0
+  });
+
+  const descargarItem = async () => {
+    if (!user || !itemId) return;
+    const res = await FileService.Fetch(user.id, itemId);
     if (res.success && res.data) {
       downloadFile(res.data);
+    } else {
+      if (res.errors.length > 0) {
+        alertitify.error(res.errors.join(", "));
+      } else {
+        alertitify.error("No se pudo descargar el archivo");
+      }
     }
   };
 
-  const openRenameModal = (fileId: string) => {
-    setSelectedFileId(fileId);
+  const openRenameModal = () => {
     setRenameModalOpen(true);
   };
 
-  const openDeleteModal = (fileId: string) => {
-    setDeleteFileId(fileId);
+  const openDeleteModal = () => {
     setDeleteModalOpen(true);
   };
 
-  const openMoveModal = (fileId: string) => {
-    setMoveFileId(fileId);
+  const openMoveModal = () => {
     setMoveModalOpen(true);
   };
 
-  const openShareModal = (fileId: string) => {
-    setShareFileId(fileId);
+  const openShareModal = () => {
     setShareModalOpen(true);
   };
 
@@ -74,7 +84,16 @@ export const FilesMap = () => {
             <div
               key={i}
               className="relative flex flex-col items-center p-1 border border-gray-300 rounded-lg bg-white shadow-md w-24"
-              onClick={() => HandleClick(file.id)}
+              onContextMenu={(e) => {
+                e.preventDefault();
+                const newPos = {
+                  x: e.pageX,
+                  y: e.pageY
+                }
+                setContextMenuPos({ ...newPos });
+                setClicked(true);
+                setItemId(file.id);
+              }}
             >
               <div className="max-w-16">
                 <FileIcon color="#d1d5db" extension={file.extension} />
@@ -83,7 +102,9 @@ export const FilesMap = () => {
                 {file.name}
                 {file.extension ? `.${file.extension}` : ""}
               </p>
-              <EditIcon
+              {
+                /*
+                <EditIcon
                 className="absolute top-0 right-16 m-1 cursor-pointer text-blue-400"
                 onClick={(e) => {
                   e.stopPropagation();
@@ -111,6 +132,9 @@ export const FilesMap = () => {
                   openDeleteModal(file.id);
                 }}
               />
+                */
+              }
+
             </div>
           ))}
         </div>
@@ -119,38 +143,87 @@ export const FilesMap = () => {
           <Typography>No hay archivos</Typography>
         </div>
       )}
-      {selectedFileId && (
-        <RenameFileModal
-          open={isRenameModalOpen}
-          setOpen={setRenameModalOpen}
-          fileId={selectedFileId}
-          fileType="file"
-        />
+      {itemId && (
+        <>
+          <RenameFileModal
+            open={isRenameModalOpen}
+            setOpen={setRenameModalOpen}
+            fileId={itemId}
+            fileType="file"
+          />
+          <DeleteConfirmationModal
+            open={isDeleteModalOpen}
+            setOpen={setDeleteModalOpen}
+            itemId={itemId}
+            itemType="file"
+          />
+          <MoveFileModal
+            open={isMoveModalOpen}
+            setOpen={setMoveModalOpen}
+            fileId={itemId}
+            fileType="file"
+          />
+          <ShareModal
+            open={isShareModalOpen}
+            setOpen={setShareModalOpen}
+            itemId={itemId}
+            itemType="file"
+          />
+        </>
       )}
-      {deleteFileId && (
-        <DeleteConfirmationModal
-          open={isDeleteModalOpen}
-          setOpen={setDeleteModalOpen}
-          itemId={deleteFileId}
-          itemType="file"
-        />
-      )}
-      {moveFileId && (
-        <MoveFileModal
-          open={isMoveModalOpen}
-          setOpen={setMoveModalOpen}
-          fileId={moveFileId}
-          fileType="file"
-        />
-      )}
-      {shareFileId && (
-        <ShareModal
-          open={isShareModalOpen}
-          setOpen={setShareModalOpen}
-          itemId={shareFileId}
-          itemType="file"
-        />
-      )}
+      {
+        clicked && (
+          <ContextMenu
+            className="text-white"
+            options={[
+              {
+                text: "Descargar",
+                icon: <CloudDownloadIcon />,
+                onClick: (e) => {
+                  e.stopPropagation();
+                  descargarItem();
+                }
+              },
+              {
+                text: "Renombrar",
+                icon: <EditIcon />,
+                onClick: (e) => {
+                  e.stopPropagation();
+                  openRenameModal();
+                  setClicked(false);
+                }
+              }, {
+                text: "Mover",
+                icon: <MoveIcon />,
+                onClick: (e) => {
+                  e.stopPropagation();
+                  openMoveModal();
+                  setClicked(false);
+                }
+              }, {
+                text: "Compartir",
+                icon: <ShareIcon />,
+                onClick: (e) => {
+                  e.stopPropagation();
+                  openShareModal();
+                  setClicked(false);
+                }
+              }, {
+                text: "Eliminar",
+                icon: <DeleteIcon />,
+                onClick: (e) => {
+                  e.stopPropagation();
+                  openDeleteModal()
+                  setClicked(false);
+                }
+              }
+            ]}
+            x={contextMenuPos.x}
+            y={contextMenuPos.y}
+            setClicked={setClicked}
+          />
+        )
+      }
     </div>
   );
 };
