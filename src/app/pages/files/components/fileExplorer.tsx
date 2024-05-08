@@ -31,6 +31,8 @@ import { RenameFileModal } from "./modals/RenameFileModal";
 import { DeleteConfirmationModal } from "./modals/DeleteConfirmationModal";
 import { MoveFileModal } from "./modals/MoveFileModal";
 import { ShareModal } from "./modals/ShareModal";
+import { ContextMenu } from "../../../../components/contextMenu/ContextMenu";
+import { ContextmenuProvider, useContextmenu } from "../../../../components/contextMenu/ContextMenuProvider";
 
 export type ExtendedTreeItemProps = {
   id: string;
@@ -165,7 +167,7 @@ const isExpandable = (reactChildren: React.ReactNode) => {
 
 interface CustomTreeItemProps
   extends Omit<UseTreeItem2Parameters, "rootRef">,
-    Omit<React.HTMLAttributes<HTMLLIElement>, "onFocus"> {}
+  Omit<React.HTMLAttributes<HTMLLIElement>, "onFocus"> { }
 
 const CustomTreeItem = React.forwardRef(function CustomTreeItem(
   props: CustomTreeItemProps,
@@ -174,10 +176,6 @@ const CustomTreeItem = React.forwardRef(function CustomTreeItem(
   const { id, itemId, label, disabled, children, ...other } = props;
 
   const setCurrentFolder = useFileExplorer((s) => s.setCurrentFolder);
-  const [isRenameModalOpen, setRenameModalOpen] = React.useState(false);
-  const [isDeleteModalOpen, setDeleteModalOpen] = React.useState(false);
-  const [isMoveModalOpen, setMoveModalOpen] = React.useState(false);
-  const [isShareModalOpen, setShareModalOpen] = React.useState(false);
 
   const {
     getRootProps,
@@ -192,10 +190,14 @@ const CustomTreeItem = React.forwardRef(function CustomTreeItem(
   const item = publicAPI.getItem(itemId);
   const expandable = isExpandable(children);
 
-  const openRenameModal = () => setRenameModalOpen(true);
-  const openDeleteModal = () => setDeleteModalOpen(true);
-  const openMoveModal = () => setMoveModalOpen(true);
-  const openShareModal = () => setShareModalOpen(true);
+  const {
+    isRenameModalOpen, setRenameModalOpen,
+    isDeleteModalOpen, setDeleteModalOpen,
+    isMoveModalOpen, setMoveModalOpen,
+    isShareModalOpen ,setShareModalOpen,
+
+    setContextMenuPos, setClicked
+  } = useContextmenu();
 
   return (
     <TreeItem2Provider itemId={itemId}>
@@ -211,6 +213,15 @@ const CustomTreeItem = React.forwardRef(function CustomTreeItem(
             onClick: () => {
               setCurrentFolder(item.id);
             },
+            onContextMenu: (e) => {
+              e.preventDefault();
+              const newPos = {
+                x: e.pageX,
+                y: e.pageY
+              }
+              setContextMenuPos({ ...newPos });
+              setClicked(true);
+            }
           })}
         >
           <TreeItem2IconContainer {...getIconContainerProps()}>
@@ -222,7 +233,9 @@ const CustomTreeItem = React.forwardRef(function CustomTreeItem(
           >
             {label}
           </CustomLabel>
-          <EditIcon
+          {
+            /*
+<EditIcon
             className="cursor-pointer text-blue-400"
             onClick={(e) => {
               e.stopPropagation();
@@ -250,6 +263,10 @@ const CustomTreeItem = React.forwardRef(function CustomTreeItem(
               openDeleteModal();
             }}
           />
+
+            */
+          }
+
         </CustomTreeItemContent>
         {children && <TransitionComponent {...getGroupTransitionProps()} />}
       </StyledTreeItemRoot>
@@ -285,20 +302,138 @@ interface FileExplorerProps {
   items: TreeViewBaseItem<ExtendedTreeItemProps>[];
 }
 
-export default function FileExplorer({ items }: FileExplorerProps) {
+function FileExplorerHandler({ items }: FileExplorerProps) {
+
+  const {
+    setRenameModalOpen,
+    setDeleteModalOpen,
+    setMoveModalOpen,
+    setShareModalOpen,
+
+    clicked, setClicked,
+    contextMenuPos
+  } = useContextmenu();
+
+  const openRenameModal = () => setRenameModalOpen(true);
+  const openDeleteModal = () => setDeleteModalOpen(true);
+  const openMoveModal = () => setMoveModalOpen(true);
+  const openShareModal = () => setShareModalOpen(true);
+
   return (
-    <RichTreeView
-      items={items}
-      aria-label="file explorer"
-      defaultExpandedItems={["1", "1.1"]}
-      defaultSelectedItems="1.1"
-      sx={{
-        height: "fit-content",
-        flexGrow: 1,
-        maxWidth: 400,
-        overflowY: "auto",
-      }}
-      slots={{ item: CustomTreeItem }}
-    />
+    <>
+      <RichTreeView
+        items={items}
+        className="!h-full"
+        aria-label="file explorer"
+        defaultExpandedItems={["1", "1.1"]}
+        defaultSelectedItems="1.1"
+        sx={{
+          height: "fit-content",
+          flexGrow: 1,
+          maxWidth: 400,
+          overflowY: "auto",
+        }}
+        slots={{ item: CustomTreeItem }}
+      />
+      {
+        clicked && (
+          <ContextMenu
+            options={[
+              {
+                text: "Renombrar",
+                icon: <EditIcon />,
+                onClick: (e) => {
+                  e.stopPropagation();
+                  openRenameModal();
+                  setClicked(false);
+                }
+              }, {
+                text: "Mover",
+                icon: <MoveIcon />,
+                onClick: (e) => {
+                  e.stopPropagation();
+                  openMoveModal();
+                  setClicked(false);
+                }
+              }, {
+                text: "Compartir",
+                icon: <ShareIcon />,
+                onClick: (e) => {
+                  e.stopPropagation();
+                  openShareModal();
+                  setClicked(false);
+                }
+              }, {
+                text: "Eliminar",
+                icon: <DeleteIcon />,
+                onClick: (e) => {
+                  e.stopPropagation();
+                  openDeleteModal()
+                  setClicked(false);
+                }
+              }
+            ]}
+            x={contextMenuPos.x}
+            y={contextMenuPos.y}
+            setClicked={setClicked}
+          />
+        )
+      }
+    </>
+
   );
 }
+
+
+export default function FileExplorer({ items }: FileExplorerProps) {
+  return (
+    <ContextmenuProvider>
+      <FileExplorerHandler items={items} />
+    </ContextmenuProvider>
+  )
+}
+
+
+/*
+
+{
+        clicked && (
+          <ContextMenu
+            options={[
+              {
+                text: "Renombrar",
+                icon: <EditIcon />,
+                onClick: (e) => {
+                  e.stopPropagation();
+                  openRenameModal();
+                }
+              }, {
+                text: "Mover",
+                icon: <MoveIcon />,
+                onClick: (e) => {
+                  e.stopPropagation();
+                  openMoveModal();
+                }
+              }, {
+                text: "Compartir",
+                icon: <ShareIcon />,
+                onClick: (e) => {
+                  e.stopPropagation();
+                  openShareModal();
+                }
+              }, {
+                text: "Eliminar",
+                icon: <DeleteIcon />,
+                onClick: (e) => {
+                  //e.stopPropagation();
+                  openDeleteModal()
+                }
+              }
+            ]}
+            x={contextMenuPos.x}
+            y={contextMenuPos.y}
+            setClicked={setClicked}
+          />
+        )}
+
+*/

@@ -18,8 +18,7 @@ const style = {
   transform: "translate(-50%, -50%)",
   width: 400,
   bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
+  border: "1px solid #000",
   p: 4,
 };
 
@@ -67,6 +66,7 @@ export const DeleteConfirmationModal = ({
   return (
     <Modal
       open={open}
+      sx={{ '& .MuiBackdrop-root': { backgroundColor: 'rgba(128, 128, 128, 0.05)' } }}
       onClose={() => setOpen(false)}
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"

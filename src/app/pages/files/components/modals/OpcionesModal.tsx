@@ -1,29 +1,22 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
-import { Icon, Input } from '@mui/material';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import IconButton from '../../../../../components/IconButton';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useFileExplorer } from '../../../../../store/fileExplorerStore';
 import SaveIcon from '@mui/icons-material/Save';
-import { FileService } from '../../../../../services/FileService';
 import { useAuth } from '../../../../../store/authStore';
-import { getBase64 } from '../../../../../utils/getBase64';
 import * as alertifyjs from "alertifyjs";
-import { ICreateFile } from '../../../../../interfaces/ICreateFile';
 import { FolderService } from '../../../../../services/FolderService';
 
 const style = {
-    position: 'absolute' as 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
+    position: "absolute" as "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
     width: 400,
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
-    boxShadow: 24,
+    bgcolor: "background.paper",
+    border: "1px solid #000",
     p: 4,
 };
 
@@ -58,6 +51,7 @@ export const OpcionesModal = ({
     return (
         <Modal
             open={open}
+            sx={{ '& .MuiBackdrop-root': { backgroundColor: 'rgba(128, 128, 128, 0.05)' } }}
             onClose={() => setOpen(false)}
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"

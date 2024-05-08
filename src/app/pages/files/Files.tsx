@@ -57,7 +57,7 @@ export const FilesView = () => {
       return data;
     }
     const all = obtenerFolders("root")
-    console.log("all",all)
+    
     return all;
   }, [files]);
 
