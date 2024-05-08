@@ -29,21 +29,25 @@ export const FolderPath = () => {
 
         //return getParent("root", []);
 
-        return ["root", "administrador", "imagenes", "paisajes"]
+        return ["root", "administrador", "imagenes", "paisajes"].map(folder => (
+            <Button variant="outlined">{folder}</Button>
+         )).reduce<JSX.Element[]>((p, c, i, a) => {
+             if(i !== a.length - 1) {
+                 return [...p, c, <ArrowForwardIosIcon/>];
+             } else {
+                 return [...p, c];
+             }
+         }, [])
     }, [currentFolder, files]);
 
     return (
         <div className="flex items-center mb-5">
             {
-                path.map(folder => (
-                   <Button variant="outlined">{folder}</Button>
-                )).reduce<JSX.Element[]>((p, c, i, a) => {
-                    if(i !== a.length - 1) {
-                        return [...p, c, <ArrowForwardIosIcon/>];
-                    } else {
-                        return [...p, c];
-                    }
-                }, [])
+                path.map((path, i) => (
+                    <div key={i}>
+                        {path}
+                    </div>
+                ))
             }
         </div>
     )
