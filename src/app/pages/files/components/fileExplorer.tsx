@@ -31,8 +31,8 @@ import { RenameFileModal } from "./modals/RenameFileModal";
 import { DeleteConfirmationModal } from "./modals/DeleteConfirmationModal";
 import { MoveFileModal } from "./modals/MoveFileModal";
 import { ShareModal } from "./modals/ShareModal";
-import { ContextMenu } from "../../../../components/contextMenu/ContextMenu";
-import { ContextmenuProvider, useContextmenu } from "../../../../components/contextMenu/ContextMenuProvider";
+import { ContextMenu } from "../../../../components/ContextMenu";
+import { ContextmenuProvider, useContextmenu } from "../context/ContextMenuProvider";
 
 export type ExtendedTreeItemProps = {
   id: string;
