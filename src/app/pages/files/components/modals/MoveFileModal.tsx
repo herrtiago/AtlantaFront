@@ -12,6 +12,7 @@ import * as alertifyjs from "alertifyjs";
 import { FolderService } from "../../../../../services/FolderService";
 import { FileService } from "../../../../../services/FileService";
 import { IFolder } from "../../../../../interfaces/IFolder";
+import { IFolderFiles } from "../../../../../interfaces/IFolderFiles";
 
 const style = {
   position: "absolute" as "absolute",
@@ -37,14 +38,31 @@ interface FolderOption {
 }
 
 // Función recursiva para listar todas las subcarpetas
-const listFolders = (folders: IFolder[], prefix = ""): FolderOption[] => {
-  return folders.flatMap((folder) => [
-    {
-      id: folder.id,
-      name: `${prefix}${folder.name}`,
-    },
-    ...listFolders(folder.folders ?? [], `${prefix}--`),
-  ]);
+const listFolders = (files: { [key: string]: IFolderFiles }): FolderOption[] => {
+
+  const all: { [key: string]: FolderOption } = {};
+
+  const getParent = (folderId: string, name: string) => {
+    const folder = files[folderId];
+
+    if (!folder) return;
+
+    for (let i = 0; i < folder.folders.length; i++) {
+      const element = folder.folders[i];
+      
+      if (!all[element.id]) {
+        all[element.id] = {
+          id: element.id,
+          name: name + "/" + element.name
+        }
+      }
+      getParent(element.id, name + "/" + element.name);
+    }
+  }
+
+  getParent("root", "");
+
+  return Object.values(all);
 };
 
 export const MoveFileModal = ({
@@ -54,23 +72,20 @@ export const MoveFileModal = ({
   fileType,
 }: MoveFileModalProps) => {
   const user = useAuth((s) => s.user);
-  const [currentFolder, actualizarArchivos] = useFileExplorer((s) => [
+  const [currentFolder, actualizarArchivos, files] = useFileExplorer((s) => [
     s.currentFolder,
     s.actualizarArchivos,
+    s.files
   ]);
   const [availableFolders, setAvailableFolders] = useState<FolderOption[]>([]);
   const [newParentId, setNewParentId] = useState("root");
 
   useEffect(() => {
     if (user) {
-      FolderService.Fetch(user.id, "root").then((res) => {
-        if (res.success && res.data) {
-          const allFolders = listFolders(res.data.folders);
-          setAvailableFolders(allFolders);
-        }
-      });
+      const allFolders = listFolders(files);
+      setAvailableFolders([...allFolders]);
     }
-  }, [user]);
+  }, [user, files]);
 
   const mover = async () => {
     if (!user || !newParentId) return;
