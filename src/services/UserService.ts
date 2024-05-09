@@ -2,7 +2,7 @@ import axios from "axios";
 import { IResponse } from "../interfaces/IResponse";
 import { IUser } from "../interfaces/IUser";
 
-const API_BASE_URL = "https://localhost:7103/User/";
+const API_BASE_URL = "http://mediafile-cliente1.bucaramanga.upb.edu.co/api/User/";
 
 export class UserService {
 

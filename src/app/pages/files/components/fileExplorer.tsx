@@ -12,6 +12,7 @@ import { treeItemClasses } from "@mui/x-tree-view/TreeItem";
 import {
   unstable_useTreeItem2 as useTreeItem2,
   UseTreeItem2Parameters,
+  UseTreeItem2Status,
 } from "@mui/x-tree-view/useTreeItem2";
 import {
   TreeItem2Content,
@@ -175,7 +176,7 @@ const CustomTreeItem = React.forwardRef(function CustomTreeItem(
 ) {
   const { id, itemId, label, disabled, children, ...other } = props;
 
-  const setCurrentFolder = useFileExplorer((s) => s.setCurrentFolder);
+  const [currentFolder, setCurrentFolder] = useFileExplorer((s) => [s.currentFolder, s.setCurrentFolder]);
 
   const {
     getRootProps,
@@ -200,14 +201,15 @@ const CustomTreeItem = React.forwardRef(function CustomTreeItem(
   } = useContextmenu();
 
   return (
+    //@ts-ignore
     <TreeItem2Provider itemId={itemId}>
       <StyledTreeItemRoot {...getRootProps(other)}>
         <CustomTreeItemContent
           {...getContentProps({
             className: clsx("content", {
               "Mui-expanded": status.expanded,
-              "Mui-selected": status.selected,
-              "Mui-focused": status.focused,
+              "Mui-selected": currentFolder == item.id,
+              "Mui-focused": currentFolder == item.id,
               "Mui-disabled": status.disabled,
             }),
             onClick: () => {
@@ -233,40 +235,6 @@ const CustomTreeItem = React.forwardRef(function CustomTreeItem(
           >
             {label}
           </CustomLabel>
-          {
-            /*
-<EditIcon
-            className="cursor-pointer text-blue-400"
-            onClick={(e) => {
-              e.stopPropagation();
-              openRenameModal();
-            }}
-          />
-          <MoveIcon
-            className="cursor-pointer text-green-500 ml-2"
-            onClick={(e) => {
-              e.stopPropagation();
-              openMoveModal();
-            }}
-          />
-          <ShareIcon
-            className="cursor-pointer text-yellow-500 ml-2"
-            onClick={(e) => {
-              e.stopPropagation();
-              openShareModal();
-            }}
-          />
-          <DeleteIcon
-            className="cursor-pointer text-red-500 ml-2"
-            onClick={(e) => {
-              e.stopPropagation();
-              openDeleteModal();
-            }}
-          />
-
-            */
-          }
-
         </CustomTreeItemContent>
         {children && <TransitionComponent {...getGroupTransitionProps()} />}
       </StyledTreeItemRoot>
@@ -392,48 +360,3 @@ export default function FileExplorer({ items }: FileExplorerProps) {
     </ContextmenuProvider>
   )
 }
-
-
-/*
-
-{
-        clicked && (
-          <ContextMenu
-            options={[
-              {
-                text: "Renombrar",
-                icon: <EditIcon />,
-                onClick: (e) => {
-                  e.stopPropagation();
-                  openRenameModal();
-                }
-              }, {
-                text: "Mover",
-                icon: <MoveIcon />,
-                onClick: (e) => {
-                  e.stopPropagation();
-                  openMoveModal();
-                }
-              }, {
-                text: "Compartir",
-                icon: <ShareIcon />,
-                onClick: (e) => {
-                  e.stopPropagation();
-                  openShareModal();
-                }
-              }, {
-                text: "Eliminar",
-                icon: <DeleteIcon />,
-                onClick: (e) => {
-                  //e.stopPropagation();
-                  openDeleteModal()
-                }
-              }
-            ]}
-            x={contextMenuPos.x}
-            y={contextMenuPos.y}
-            setClicked={setClicked}
-          />
-        )}
-
-*/

@@ -2,7 +2,7 @@ import axios from "axios";
 import { IFolderFiles } from "../interfaces/IFolderFiles";
 import { IResponse } from "../interfaces/IResponse";
 
-const API_BASE_URL = "https://localhost:7103/Folder/";
+const API_BASE_URL = "http://mediafile-cliente1.bucaramanga.upb.edu.co/api/Folder/";
 
 export class FolderService {
 

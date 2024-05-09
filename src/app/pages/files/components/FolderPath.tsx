@@ -7,11 +7,11 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
 export const FolderPath = () => {
 
-    const [currentFolder, files] = useFileExplorer(s => [s.currentFolder, s.files]);
+    const [currentFolder, setCurrentFolder, files] = useFileExplorer(s => [s.currentFolder, s.setCurrentFolder, s.files]);
 
-    const path = useMemo(() => {
+    const path = useMemo(() => {    
 
-        const getParent = (folderId: string, path: IFolder[]): IFolder[] => {
+        const getParent = (folderId: string, path: IFolder[]): IFolder[] | null => {
             const folder = files[folderId];
 
             if (!folder) return path;
@@ -21,16 +21,24 @@ export const FolderPath = () => {
                 if (element.id == currentFolder) {
                     return [...path, element];
                 }
-                getParent(element.id, [...path, element]);
+                const _path = getParent(element.id, [...path, element]);
+                if(_path != null) return _path;
             }
 
-            return path;
+            return null;
         }
 
-        //return getParent("root", []);
+        const folders: IFolder[] = [{id: "root", folderId: "root", name: "root"}];
 
-        return ["root", "administrador", "imagenes", "paisajes"].map(folder => (
-            <Button variant="outlined">{folder}</Button>
+        if(currentFolder != null) {
+            const path = getParent("root", []);
+            if(path!=null) {
+                folders.push(...path);
+            }
+        }
+
+        return folders.map(folder => (
+            <Button variant="outlined" onClick={() => setCurrentFolder(folder.id)}>{folder.name}</Button>
          )).reduce<JSX.Element[]>((p, c, i, a) => {
              if(i !== a.length - 1) {
                  return [...p, c, <ArrowForwardIosIcon/>];
